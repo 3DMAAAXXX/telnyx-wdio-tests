@@ -1,0 +1,4 @@
+{
+  "using": "css selector",
+  "value": "div.mt-xxl > [href=\"https://developers.telnyx.com\"]"
+}
