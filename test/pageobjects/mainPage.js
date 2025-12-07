@@ -113,20 +113,23 @@ export default class MainPage {
     }
 
     async clickGPTIcon() {
-    await this.gptIcon.scrollIntoView()
-    await browser.pause(500)
-    await this.gptIcon.waitForClickable({ timeout: 5000 })
-    await this.gptIcon.click()
-    await browser.pause(1000)
-    
-    const windowHandles = await browser.getWindowHandles()
-    if (windowHandles.length > 1) {
-        await browser.switchToWindow(windowHandles[windowHandles.length - 1])
-        await browser.closeWindow()
-        await browser.switchToWindow(windowHandles[0])
+        await this.gptIcon.scrollIntoView()
+        await browser.pause(500)
+        await this.gptIcon.waitForClickable({ timeout: 5000 })
+        await this.gptIcon.click()
+        await browser.pause(1000)
+        
+        // Краща обробка вікон
+        const windowHandles = await browser.getWindowHandles()
+        if (windowHandles.length > 1) {
+            // Закриваємо нове вікно
+            await browser.switchToWindow(windowHandles[windowHandles.length - 1])
+            await browser.closeWindow()
+            // Повертаємося до головного вікна
+            await browser.switchToWindow(windowHandles[0])
+        }
+        await browser.pause(500)
     }
-    await browser.pause(500)
-}
 
 
     async clickExploreDevDocs() {
@@ -184,20 +187,21 @@ export default class MainPage {
     }
 
     async verifyNativeSpeechVideo() {
-    try {
-        await this.pTextScroll.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        })
+        try {
+            const pText = await this.pTextScroll
+            if (await pText.isExisting()) {
+                await pText.scrollIntoView({ behavior: "smooth", block: "center" })
+                await browser.pause(1000)
+            }
+        } catch (e) {
+        }
+        
+        await this.firstHIWVideo.scrollIntoView()
         await browser.pause(1000)
-    } catch (e) {
+        
+        const isVideoDisplayed = await this.firstHIWVideo.isDisplayed()
+        expect(isVideoDisplayed).toBe(true)
     }
-    
-    await this.firstHIWVideo.scrollIntoView()
-    await browser.pause(1000)
-    const isVideoDisplayed = await this.firstHIWVideo.isDisplayed()
-    expect(isVideoDisplayed).toBe(true)
-}
 
     async verifyVoiceAIAgentsVideo() {
         await this.ourSolutionsSection.scrollIntoView()
