@@ -29,13 +29,13 @@ export default class MainPage {
     get ourSolutionsSection () { return $('#voice-ai-agents-0') }
 
     async open() {
-    await browser.url('/')
-    try {
-        await browser.maximizeWindow()
-    } catch (e) {
-        await browser.setWindowSize(1920, 1080)
+        await browser.url('/')
+        try {
+            await browser.maximizeWindow()
+        } catch (e) {
+            await browser.setWindowSize(1920, 1080)
+        }
     }
-}
 
 
     async verifyTitleSequence() {
