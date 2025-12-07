@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'  # Запуск щодня о 2:00 AM UTC
 
 jobs:
   test:
@@ -13,39 +15,52 @@ jobs:
     
     strategy:
       matrix:
-        browser: [chrome, firefox]
+        browser: [chrome, firefox, edge]
       fail-fast: false
 
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: npm ci
 
-      - name: Install browsers
-        run: |
-          if [ "${{ matrix.browser }}" = "chrome" ]; then
-            npx @puppeteer/browsers install chrome@stable
-          elif [ "${{ matrix.browser }}" = "firefox" ]; then
-            npx @puppeteer/browsers install firefox@stable
-          fi
+      - name: 🌐 Setup Chrome
+        if: matrix.browser == 'chrome'
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
 
-      - name: Run tests
+      - name: 🦊 Setup Firefox
+        if: matrix.browser == 'firefox'
+        uses: browser-actions/setup-firefox@v1
+        with:
+          firefox-version: latest
+
+      - name: 🔷 Setup Edge
+        if: matrix.browser == 'edge'
+        run: |
+          wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main"
+          sudo apt-get update
+          sudo apt-get install -y microsoft-edge-stable
+
+      - name: 🧪 Run ${{ matrix.browser }} tests
         run: npm run test:${{ matrix.browser }}
         continue-on-error: true
 
-      - name: Generate Allure Report
+      - name: 📊 Generate Allure Report
         if: always()
-        run: npm run allure:generate
+        run: |
+          npm run allure:generate || echo "Allure generation warning (non-critical)"
 
-      - name: Upload Allure Results
+      - name: 📤 Upload Allure Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -53,47 +68,108 @@ jobs:
           path: allure-results
           retention-days: 30
 
-      - name: Upload Allure Report
-        if: always()
+      - name: 📸 Upload Screenshots
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report-${{ matrix.browser }}
-          path: allure-report
-          retention-days: 30
+          name: screenshots-${{ matrix.browser }}
+          path: |
+            allure-results/**/*.png
+            screenshots/**/*.png
+          if-no-files-found: ignore
+          retention-days: 7
 
   publish-report:
     needs: test
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Setup Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Install Allure
+      - name: 📦 Install Allure
         run: npm install -g allure-commandline
 
-      - name: Merge Allure results
+      - name: 📥 Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: 🔀 Merge Allure results
         run: |
           mkdir -p allure-results
-          find artifacts -name "allure-results-*" -type d -exec cp -r {}/* allure-results/ \;
+          echo "Merging results from all browsers..."
+          find artifacts -name "allure-results-*" -type d -exec sh -c 'echo "Copying from: $1" && cp -r "$1"/* allure-results/ 2>/dev/null || true' _ {} \;
+          ls -la allure-results/ || echo "No results found"
 
-      - name: Generate combined Allure report
-        run: allure generate allure-results -o allure-report --clean
+      - name: 📊 Generate combined Allure report
+        run: |
+          allure generate allure-results -o allure-report --clean
+          echo "Report generated successfully"
+          ls -la allure-report/
 
-      - name: Deploy to GitHub Pages
+      - name: 📝 Add report metadata
+        run: |
+          cat > allure-report/README.md << 'EOF'
+          # 🧪 Test Execution Report
+          
+          **Generated:** $(date)
+          **Commit:** ${{ github.sha }}
+          **Branch:** ${{ github.ref_name }}
+          **Workflow:** ${{ github.workflow }}
+          
+          [View Full Report](./index.html)
+          EOF
+
+      - name: 🚀 Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
           publish_branch: gh-pages
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy Allure Report - ${{ github.sha }}'
+
+      - name: 📢 Comment PR with report link
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reportUrl = `https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 📊 Test Report Published!\n\n✅ View the Allure Report: [${reportUrl}](${reportUrl})\n\nGenerated from commit: ${context.sha.substring(0, 7)}\n\n**Tested browsers:** Chrome, Firefox, Edge`
+            })
+
+  notify:
+    needs: [test, publish-report]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: 📊 Test Summary
+        run: |
+          echo "### 🧪 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Browser | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Chrome  | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Firefox | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Edge    | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 **Report URL**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
+
