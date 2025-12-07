@@ -5,7 +5,7 @@ export const config = {
     capabilities: [{
         browserName: 'firefox',
         'moz:firefoxOptions': {
-            // args: ['-headless'],
+            args: ['-headless'],
             prefs: {
                 'dom.webdriver.enabled': false,
                 'useAutomationExtension': false

@@ -8,9 +8,11 @@ export const config = {
             args: [
                 '--disable-dev-shm-usage',
                 '--no-sandbox',
-                //'--headless',
+                '--headless=new',
                 '--disable-gpu',
-                '--window-size=1920,1080'
+                '--window-size=1920,1080',
+                '--disable-web-security',
+                '--disable-features=VizDisplayCompositor'
             ]
         }
     }]
