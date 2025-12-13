@@ -1,0 +1,2 @@
+element not interactable: WebDriverError: element not interactable: [object HTMLDivElement] has no size and location
+  (Session info: chrome=143.0.7499.41) when running "actions" with method "POST"

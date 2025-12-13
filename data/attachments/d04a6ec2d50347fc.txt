@@ -1,0 +1,2 @@
+element click intercepted: WebDriverError: element click intercepted: Element <input type="checkbox" id="terms_and_conditions" name="terms_and_conditions" class="c-PJLV c-kDftYo c-PJLV-ealYFu-lead-false c-kDftYo-fPPsiB-labelSize-small c-iGlHVe"> is not clickable at point (248, 423). Other element would receive the click: <div id="onetrust-button-group-parent" class="ot-sdk-twelve ot-sdk-columns">...</div>
+  (Session info: chrome=143.0.7499.40) when running "element/f.DC732131C758644B39B3947BD1A0B869.d.E3C87CBD9EFD3F6E7BEBC92863B6E55D.e.213/click" with method "POST"

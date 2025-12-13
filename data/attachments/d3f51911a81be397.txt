@@ -1,0 +1,2 @@
+element not interactable: WebDriverError: element not interactable: [object HTMLButtonElement] has no size and location
+  (Session info: edge-headless-shell=120.0.2210.77) when running "actions" with method "POST"

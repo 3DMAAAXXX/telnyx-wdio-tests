@@ -1,0 +1,4 @@
+{
+  "using": "css selector",
+  "value": "div.flex.items-start.justify-start > a.uppercase"
+}
