@@ -1,2 +1,0 @@
-no such window: WebDriverError: no such window
-  (Session info: edge-headless-shell=120.0.2210.77) when running "window" with method "POST"

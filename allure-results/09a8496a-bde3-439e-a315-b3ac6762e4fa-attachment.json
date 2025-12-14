@@ -1,4 +1,0 @@
-{
-  "using": "css selector",
-  "value": "[href='/sign-up'] > span[data-content='Sign up']"
-}

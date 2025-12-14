@@ -1,2 +1,0 @@
-move target out of bounds: WebDriverError: move target out of bounds: viewport size: 1920, 1080
-  (Session info: edge-headless-shell=120.0.2210.77) when running "actions" with method "POST"

@@ -1,5 +1,0 @@
-{
-  "error": "no such element",
-  "message": "no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\"div.fixed > button\"}\n  (Session info: chrome-headless-shell=120.0.6099.109)",
-  "stacktrace": "#0 0x626433351f83 <unknown>\n#1 0x62643300acf7 <unknown>\n#2 0x62643305a99e <unknown>\n#3 0x62643305aaa1 <unknown>\n#4 0x6264330a5d64 <unknown>\n#5 0x6264330840dd <unknown>\n#6 0x6264330a3006 <unknown>\n#7 0x626433083e53 <unknown>\n#8 0x62643304bdd4 <unknown>\n#9 0x62643304d1de <unknown>\n#10 0x626433316531 <unknown>\n#11 0x62643331a455 <unknown>\n#12 0x626433302f55 <unknown>\n#13 0x62643331b0ef <unknown>\n#14 0x6264332e699f <unknown>\n#15 0x62643333f008 <unknown>\n#16 0x62643333f1d7 <unknown>\n#17 0x626433351124 <unknown>\n#18 0x7c639189dac3 <unknown>\n"
-}

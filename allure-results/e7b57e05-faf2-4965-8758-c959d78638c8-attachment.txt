@@ -1,2 +1,0 @@
-move target out of bounds: WebDriverError: move target out of bounds
-  (Session info: MicrosoftEdge=142.0.3595.94) when running "actions" with method "POST"
