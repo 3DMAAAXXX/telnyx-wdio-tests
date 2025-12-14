@@ -3,12 +3,10 @@ import { config as baseConfig } from './wdio.conf.js'
 export const config = {
     ...baseConfig,
     
-    // Selenium Grid налаштування
     hostname: 'selenium-hub',
     port: 4444,
     path: '/wd/hub',
     
-    // Паралельний запуск на всіх браузерах
     maxInstances: 3,
     
     capabilities: [
@@ -45,14 +43,11 @@ export const config = {
         }
     ],
     
-    // Збільшені таймаути для Docker
     connectionRetryTimeout: 180000,
     connectionRetryCount: 5,
     
-    // Не використовуємо локальні сервіси в Docker
     services: [],
     
-    // Хук для логування
     beforeSession: function (config, capabilities, specs) {
         console.log(`Starting tests on ${capabilities.browserName}`)
     },

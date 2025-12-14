@@ -8,7 +8,7 @@ export const config = {
             args: [
                 '--disable-dev-shm-usage',
                 '--no-sandbox',
-                '--headless=new',
+                '--headless',
                 '--disable-gpu',
                 '--window-size=1920,1080',
                 '--disable-web-security',
