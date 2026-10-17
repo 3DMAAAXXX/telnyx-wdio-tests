@@ -1,0 +1,2 @@
+element not interactable: WebDriverError: element not interactable: [object HTMLImageElement] has no size and location
+  (Session info: chrome=155.0.8059.39) when running "actions" with method "POST"
