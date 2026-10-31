@@ -1,0 +1,1 @@
+move target out of bounds: WebDriverError: Origin element [object Object] {"element-6066-11e4-a52e-4f735466cecf":"8fc4f71e-aea4-47a2-af31-481a486896d0"} is not displayed when running "actions" with method "POST"
